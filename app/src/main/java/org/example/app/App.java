@@ -4,23 +4,24 @@ import java.nio.file.Path;
 
 public class App {
     public static void main(String[] args) {
-        DirectoryInfo directoryInfo = DirectoryInfo.of("./");
+        DirectoryInfo.of("./").ifPresent(directoryInfo -> {
 
-        directoryInfo.getDirectoryPath().ifPresent(path -> System.out.println("Directory: " + path));
+           System.out.println("Directory: " + directoryInfo.getDirectoryPath());
 
-        directoryInfo.getNumberOfFiles().ifPresent(count -> System.out.println("Number of files: " + count));
+            System.out.println("Number of files: " + directoryInfo.getNumberOfFiles());
 
-        directoryInfo.getTotalSize().ifPresent(size -> System.out.println("Total size: " + size + " bytes"));
+            System.out.println("Total size: " + directoryInfo.getTotalSize() + " bytes");
 
-        System.out.println("Subdirectories:");
-        for (Path subDir : directoryInfo.directories()) {
-            System.out.println(subDir);
-        }
+            System.out.println("Subdirectories:");
+            for (Path subDir : directoryInfo.directories()) {
+                System.out.println(subDir);
+            }
 
-        System.out.println("Files:");
-        for (Path file : directoryInfo.files()) {
-            System.out.println(file);
-        }
+            System.out.println("Files:");
+            for (Path file : directoryInfo.files()) {
+                System.out.println(file);
+            }
+        });
     }
 
 }

@@ -2,62 +2,57 @@ package org.example.app;
 
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DirectoryInfoTest {
+
+    public static final String NON_EXISTENT_DIRECTORY = "/non/existent/directory";
+
     @Test
-    void testPositiveScenario() {
-        DirectoryInfo directoryInfo = DirectoryInfo.of("./");
-
-
-        Optional<String> directoryPath = directoryInfo.getDirectoryPath();
-        assertTrue(directoryPath.isPresent());
-
-
-        Optional<Integer> numberOfFiles = directoryInfo.getNumberOfFiles();
-        assertTrue(numberOfFiles.isPresent());
-
-
-        Optional<Long> totalSize = directoryInfo.getTotalSize();
-        assertTrue(totalSize.isPresent());
-
-
-        List<Path> directories = directoryInfo.directories();
-        assertFalse(directories.isEmpty());
-
-
-        List<Path> files = directoryInfo.files();
-        assertFalse(files.isEmpty());
+    void testDirectoryExist() {
+        Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of("./");
+        assertTrue(directoryInfo.isPresent());
     }
 
+    @Test
+    void testDirectoryNotExist() {
+        Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of(NON_EXISTENT_DIRECTORY);
+        assertTrue(directoryInfo.isEmpty());
+    }
 
     @Test
-    void testNegativeScenarioForNonExistingDirectory() {
-        DirectoryInfo directoryInfo = DirectoryInfo.of("/non/existent/directory");
+    void testDirectoryWithSubDirectories() throws Exception {
+        Path subDir = Files.createTempDirectory("subDir");
+        Files.createDirectories(Path.of(subDir.toString(), "one"));
 
+        Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of(subDir);
+        List<Path> directories = directoryInfo.get().directories();
+        assertEquals(1, directories.size());
+    }
 
-        Optional<String> directoryPath = directoryInfo.getDirectoryPath();
-        assertTrue(directoryPath.isEmpty());
+    @Test
+    void testDirectoryWithNoSubDirectories() throws Exception {
+        Path empty = Files.createTempDirectory("empty");
+        Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of(empty);
 
-
-        Optional<Integer> numberOfFiles = directoryInfo.getNumberOfFiles();
-        assertTrue(numberOfFiles.isEmpty());
-
-
-        Optional<Long> totalSize = directoryInfo.getTotalSize();
-        assertTrue(totalSize.isEmpty());
-
-
-        List<Path> directories = directoryInfo.directories();
+        List<Path> directories = directoryInfo.get().directories();
         assertTrue(directories.isEmpty());
+    }
 
+    @Test
+    void testFilesExist() {
+        Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of("./");
+        assertTrue(directoryInfo.get().files().size() != 0);
+    }
 
-        List<Path> files = directoryInfo.files();
-        assertTrue(files.isEmpty());
+    @Test
+    void testFilesNotExist() {
+        Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of(NON_EXISTENT_DIRECTORY);
+        assertTrue(directoryInfo.isEmpty());
     }
 }
