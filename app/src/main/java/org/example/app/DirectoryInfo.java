@@ -41,8 +41,6 @@ public class DirectoryInfo {
             totalSize += file.length();
         }
         return totalSize;
-
-
     }
 
     public List<Path> directories() {

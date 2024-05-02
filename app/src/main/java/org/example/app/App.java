@@ -12,17 +12,10 @@ public class App {
 
             System.out.println("Total size: " + directoryInfo.getTotalSize() + " bytes");
 
-            System.out.println("Subdirectories:");
-            for (Path subDir : directoryInfo.directories()) {
-                System.out.println(subDir);
-            }
+            System.out.println("Subdirectories: " + directoryInfo.directories());
 
-            System.out.println("Files:");
-            for (Path file : directoryInfo.files()) {
-                System.out.println(file);
-            }
+            System.out.println("Files: " + directoryInfo.files());
         });
     }
-
 }
 
