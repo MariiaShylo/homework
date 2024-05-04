@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -60,5 +62,25 @@ public class DirectoryInfoTest {
         Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of(empty);
         List<Path> files = directoryInfo.get().files();
         assertTrue(files.isEmpty());
+    }
+
+    @Test
+    void testDirectoriesInfo() throws Exception{
+        Path dir = Files.createTempDirectory("dir");
+        Files.createDirectories(Path.of(dir.toString(), "one"));
+        Files.createDirectories(Path.of(dir.toString(), "two"));
+
+        Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of(dir);
+        Set <DirectoryInfo> directoryInfoSet = directoryInfo.get().directoriesInfo();
+        assertEquals(2, directoryInfoSet.size());
+    }
+
+    @Test
+    void testDirectoriesInfoEmpty() throws Exception{
+        Path dir = Files.createTempDirectory("dir");
+
+        Optional<DirectoryInfo> directoryInfo = DirectoryInfo.of(dir);
+        Set <DirectoryInfo> directoryInfoSet = directoryInfo.get().directoriesInfo();
+        assertTrue(directoryInfoSet.isEmpty());
     }
 }

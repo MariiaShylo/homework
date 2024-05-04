@@ -17,7 +17,7 @@ public class DirectoryInfo {
             if (file.exists() && file.isDirectory()) {
                 return Optional.of(new DirectoryInfo(file));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return Optional.empty();
@@ -25,6 +25,18 @@ public class DirectoryInfo {
 
     public static Optional<DirectoryInfo> of(Path path) {
         return of(path.toString());
+    }
+
+    /**
+     * Returns information about the subdirectories of the current directory.
+     * @return A Set containing information about the subdirectories.
+     */
+    public Set<DirectoryInfo> directoriesInfo() {
+        Set<DirectoryInfo> subDirectories = new HashSet<>();
+        for (Path path : directories()) {
+            subDirectories.add(of(path).get());
+        }
+        return subDirectories;
     }
 
     public String getDirectoryPath() {
@@ -44,24 +56,35 @@ public class DirectoryInfo {
     }
 
     public List<Path> directories() {
-        List<Path> directoriesList = new ArrayList<>();
-        File[] subDirectories = directory.listFiles(File::isDirectory);
-        if (subDirectories != null) {
-            for (File subDir : subDirectories) {
-                directoriesList.add(subDir.toPath());
-            }
-        }
-        return directoriesList;
+        return getPaths(directory.listFiles(File::isDirectory));
     }
 
     public List<Path> files() {
-        List<Path> fileList = new ArrayList<>();
-        File[] files = directory.listFiles(File::isFile);
+        return getPaths(directory.listFiles(File::isFile));
+    }
+
+    private List<Path> getPaths(File[] files) {
+        List<Path> paths = new ArrayList<>();
         if (files != null) {
             for (File file : files) {
-                fileList.add(file.toPath());
+                paths.add(file.toPath());
             }
         }
-        return fileList;
+        return paths;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DirectoryInfo that = (DirectoryInfo) o;
+        return Objects.equals(directory, that.directory);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(directory);
+    }
+
+
 }
